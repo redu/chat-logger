@@ -7,9 +7,15 @@ gem 'rails', '3.2.8'
 
 gem 'mysql2'
 
+gem 'omniauth-redu', :git => 'git://github.com/redu/omniauth-redu.git'
+
 
 group :development do
   gem 'rspec-rails'
+end
+
+group :test do
+  gem "shoulda-matchers"
 end
 
 # Gems used only for assets and not required
