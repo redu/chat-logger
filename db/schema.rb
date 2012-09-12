@@ -11,18 +11,23 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120911213843) do
+ActiveRecord::Schema.define(:version => 20120912184454) do
 
   create_table "chat_messages", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "contact_id"
+    t.integer  "chat_id"
     t.text     "message"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
-  add_index "chat_messages", ["contact_id"], :name => "index_chat_messages_on_contact_id"
-  add_index "chat_messages", ["user_id"], :name => "index_chat_messages_on_user_id"
+  create_table "chats", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "contact_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "chats", ["user_id"], :name => "index_chats_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "username"

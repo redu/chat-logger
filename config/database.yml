@@ -1,24 +1,16 @@
+common: &common
+  adapter: postgresql
+  username: matheus
+  password: # from psql setup, see Postgresql
+
 development:
-  adapter: mysql2
-  username: root
-  password: 
-  database: chatlogger_dev
-  host: localhost
-production:
-  adapter: mysql2
-  username: root
-  password:
-  database: chatlogger_prod
-  host: localhost
+  <<: *common
+  database: chatlogger_development
+
 test:
-  adapter: mysql2
-  username: root
-  password:
+  <<: *common
   database: chatlogger_test
-  host: localhost
-staging:
-  adapter: mysql2
-  username: root
-  password:
-  database: chatlogger_stage
-  host: localhost
+
+production:
+  <<: *common
+  database: chatlogger_production
