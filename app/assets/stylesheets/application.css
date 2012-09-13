@@ -11,3 +11,13 @@
  *= require_self
  *= require_tree .
  */
+body {
+  background-image: url('texturetastic_gray.png');
+  background-repeat: repeat;
+  padding-top: 60px;
+}
+
+.hcol {
+  width: 55px;
+  text-align: center;
+}

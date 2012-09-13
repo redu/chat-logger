@@ -9,6 +9,10 @@ gem 'pg'
 
 gem 'omniauth-redu', :git => 'git://github.com/redu/omniauth-redu.git'
 
+gem 'factory_girl'
+
+gem 'factory_girl_rails', '~> 4.0'
+
 
 group :development do
   gem 'rspec-rails'
