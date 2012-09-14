@@ -152,8 +152,7 @@ PLATFORMS
 
 DEPENDENCIES
   coffee-rails (~> 3.2.1)
-  factory_girl
-  factory_girl_rails (~> 4.0)
+  factory_girl_rails
   jquery-rails
   omniauth-redu!
   pg

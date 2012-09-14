@@ -2,17 +2,11 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.8'
 
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
-
 gem 'pg'
 
 gem 'omniauth-redu', :git => 'git://github.com/redu/omniauth-redu.git'
 
-gem 'factory_girl'
-
-gem 'factory_girl_rails', '~> 4.0'
-
+gem 'jquery-rails'
 
 group :development do
   gem 'rspec-rails'
@@ -20,6 +14,10 @@ end
 
 group :test do
   gem "shoulda-matchers"
+end
+
+group :development, :test do
+  gem 'factory_girl_rails'
 end
 
 # Gems used only for assets and not required
@@ -34,7 +32,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-gem 'jquery-rails'
+# Bundle edge Rails instead:
+# gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
