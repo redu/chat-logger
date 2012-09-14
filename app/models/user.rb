@@ -10,5 +10,5 @@ class User < ActiveRecord::Base
   validates_presence_of :role
 
   # Chat
-  has_many :chats
+  has_many :chats, :dependent => :destroy
 end
