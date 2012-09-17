@@ -2,8 +2,8 @@
 
 FactoryGirl.define do
   factory :chat do 
-    association :user, factory: :student_user
-    association :contact, factory: :professor_user
+    association :user, factory: :student
+    association :contact, factory: :mentor
 
     ignore do
       posts_count 5

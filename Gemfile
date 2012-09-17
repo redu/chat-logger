@@ -2,11 +2,13 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.8'
 
-gem 'pg'
-
 gem 'omniauth-redu', :git => 'git://github.com/redu/omniauth-redu.git'
 
 gem 'jquery-rails'
+
+gem 'pg'
+
+gem 'debugger'
 
 group :development do
   gem 'rspec-rails'
@@ -46,6 +48,3 @@ end
 
 # Deploy with Capistrano
 # gem 'capistrano'
-
-# To use debugger
-# gem 'debugger'

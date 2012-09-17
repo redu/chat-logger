@@ -1,5 +1,6 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
+include FactoriesHelper
 FactoryGirl.define do
   factory :user do
     sequence(:username) { |n| "aluno#{n}" }
@@ -7,20 +8,20 @@ FactoryGirl.define do
     sequence(:uid) { |n| n }
     last_name  "Yed"
 
-    factory :student_user do
-      role Role.find_by_name('aluno')
+    factory :student do
+      rulez(1)
     end
 
-    factory :admin_user do
-      role Role.find_by_name('administrador')
+    factory :admin do
+      rulez(2)
     end
 
-    factory :professor_user do
-      role Role.find_by_name('professor')
+    factory :mentor do
+      rulez(3)
     end
 
-    factory :tutor_user do
-      Role.find_by_name('tutor')
+    factory :tutor do
+      rulez(4)
     end
   end
 end

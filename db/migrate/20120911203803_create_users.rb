@@ -3,7 +3,7 @@ class CreateUsers < ActiveRecord::Migration
     create_table :users do |t|
       t.string :username
       t.integer :uid
-      t.integer :role
+      t.belongs_to :role
       t.string :token
       t.string :first_name
       t.string :last_name

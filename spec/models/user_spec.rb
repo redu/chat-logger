@@ -12,7 +12,6 @@ describe User do
 
   # Role
   it { should respond_to(:role) }
-  it { should validate_presence_of(:role) }
 
   # Chat
   it { should have_many(:chats) }
