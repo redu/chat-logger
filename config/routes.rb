@@ -1,7 +1,9 @@
 ChatLogger::Application.routes.draw do
   root :to => 'users#index'
 
-  resources :users
+  resources :users do
+    resources :chats, :only => :index
+  end
   resources :chats
 
   # The priority is based upon order of creation:

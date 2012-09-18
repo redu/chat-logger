@@ -10,7 +10,8 @@ FactoryGirl.define do
     end
 
     after(:create) do |chat, evaluator|
-      FactoryGirl.create_list(:chat_message, evaluator.posts_count, chat: chat)
+      FactoryGirl.create_list(:chat_message, evaluator.posts_count, chat: chat,
+                              :user => chat.user, :contact => chat.contact)
     end
   end
 end

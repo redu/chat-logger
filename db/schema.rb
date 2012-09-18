@@ -15,10 +15,16 @@ ActiveRecord::Schema.define(:version => 20120917163644) do
 
   create_table "chat_messages", :force => true do |t|
     t.integer  "chat_id"
+    t.integer  "user_id"
+    t.integer  "contact_id"
     t.text     "message"
+    t.datetime "sent_at"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  add_index "chat_messages", ["contact_id"], :name => "index_chat_messages_on_contact_id"
+  add_index "chat_messages", ["user_id"], :name => "index_chat_messages_on_user_id"
 
   create_table "chats", :force => true do |t|
     t.integer  "user_id"

@@ -4,9 +4,11 @@
       <%= user.role.name.capitalize %> <%= user.first_name %> (<%= user.username %>)
     </h4>
     <ul class="list-button">
-      <% user_chats(user.id).each do |chat| %>
+      <% user_chats(user).each do |chat| %>
         <li class="list-button-item">
+          <%= link_to chat_path(chat.id) do %>
           Conversa com <%=chat.contact.role.name %> <%= chat.contact.first_name %>
+          <% end %>
         </li>
       <% end %>
     </ul>
