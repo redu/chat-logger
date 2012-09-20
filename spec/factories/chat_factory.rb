@@ -5,13 +5,20 @@ FactoryGirl.define do
     association :user, factory: :student
     association :contact, factory: :mentor
 
-    ignore do
-      posts_count 5
-    end
-
-    after(:create) do |chat, evaluator|
-      FactoryGirl.create_list(:chat_message, evaluator.posts_count, chat: chat,
-                              :user => chat.user, :contact => chat.contact)
+    after(:create) do |chat|
+      6.times do | n |
+        if n.odd?
+          chat.chat_messages << FactoryGirl.create(:chat_message,
+                                                   :chat => chat,
+                                                   :user => chat.user,
+                                                   :contact => chat.contact)
+        else
+          chat.chat_messages << FactoryGirl.create(:chat_message,
+                                                   :chat => chat,
+                                                   :user => chat.contact,
+                                                   :contact => chat.user)
+        end
+      end
     end
   end
 end

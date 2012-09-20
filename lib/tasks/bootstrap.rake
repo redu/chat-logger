@@ -16,9 +16,13 @@ namespace :bootstrap do
       # Cria mensagem em dia diferente para o mesmo chat
       chat.chat_messages << FactoryGirl.create(:chat_message, 
                                                :chat => chat,
+                                               :user => chat.user,
+                                               :contact => chat.contact,
                                                :sent_at => 1.day.ago)
       chat.chat_messages << FactoryGirl.create(:chat_message, 
                                                :chat => chat,
+                                               :user => chat.contact,
+                                               :contact => chat.user,
                                                :sent_at => 2.day.ago)
     end
   end

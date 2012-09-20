@@ -3,10 +3,10 @@
 include FactoriesHelper
 FactoryGirl.define do
   factory :user do
-    sequence(:username) { |n| "aluno#{n}" }
+    sequence(:username) { |n| "user#{n}" }
     sequence(:first_name, 'a') { |n| "Mart#{n}" }
-    sequence(:uid) { |n| n }
-    last_name  "Yed"
+    sequence(:uid)
+    last_name  "da Silva"
 
     factory :student do
       rulez(1)

@@ -6,8 +6,13 @@
     <ul class="list-button">
       <% user_chats(user).each do |chat| %>
         <li class="list-button-item">
-          <%= link_to chat_path(chat.id) do %>
-          Conversa com <%=chat.contact.role.name %> <%= chat.contact.first_name %>
+          <%= link_to space_user_chat_path(@space.sid, @user.id, chat.id) do %>
+          <!-- Paliativo para mostrar chats quando o usuário é apenas o contact -->
+            <% if chat.user == user %>
+              Conversa com <%=chat.contact.role.name %> <%= chat.contact.first_name %>
+            <% else %>
+              Conversa com <%=chat.user.role.name %> <%= chat.user.first_name %>
+            <% end %>
           <% end %>
         </li>
       <% end %>

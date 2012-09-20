@@ -6,12 +6,18 @@ describe User do
   it { should validate_presence_of(:username) }
   it { should validate_uniqueness_of(:username) }
 
+  # Uid
+  it { should respond_to(:uid) }
+  it { should validate_presence_of(:uid) }
+  it { should validate_uniqueness_of(:uid) }
+
   # First and last names
   it { should respond_to(:first_name) }
   it { should respond_to(:last_name) }
 
   # Role
   it { should respond_to(:role) }
+  # it { should validate_presence_of(:role) }
 
   # Chat
   it { should have_many(:chats) }

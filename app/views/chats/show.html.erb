@@ -4,11 +4,12 @@
                 :class => "breadcrumb-mini-link icon-home-lightblue_16_18-before" %>
   </li>
   <li class="breadcrumb-mini-item icon-arrow-right-separator-gray_16_18-after">
-    Conversas de <%= @chat.user.first_name %>
+    <%= link_to space_user_chats_path(@space.sid, @chat.user), :class => "breadcrumb-mini-link" do %>
+      Conversas de <%= @chat.user.first_name %>
+    <% end %>
   </li>
   <li class="breadcrumb-mini-item icon-arrow-right-separator-gray_16_18-after">
-    <a class="breadcrumb-mini-link" href="#">Com <%= @chat.contact.role.name %>
-     <%= @chat.contact.first_name %></a>
+    Com <%= @chat.contact.role.name %> <%= @chat.contact.first_name %>
   </li>
 </ul>
 <% messages_per_day(@chat).each do | msg_per_day | %>
@@ -18,7 +19,7 @@
       <% msg_per_day.each do | msg | %>
         <tr>
           <td class="hcol"><%= msg.sent_at.to_s(:time) %></td>
-          <td><%= msg.user %>: <%= msg.message %></td>
+          <td><%= msg.user.first_name %>: <%= msg.message %></td>
         </tr>
       <% end %>
     </tbody>

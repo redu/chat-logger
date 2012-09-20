@@ -11,9 +11,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120917163644) do
+ActiveRecord::Schema.define(:version => 20120919170850) do
 
   create_table "chat_messages", :force => true do |t|
+    t.integer  "cmid"
     t.integer  "chat_id"
     t.integer  "user_id"
     t.integer  "contact_id"
@@ -23,16 +24,19 @@ ActiveRecord::Schema.define(:version => 20120917163644) do
     t.datetime "updated_at", :null => false
   end
 
+  add_index "chat_messages", ["cmid"], :name => "index_chat_messages_on_cmid"
   add_index "chat_messages", ["contact_id"], :name => "index_chat_messages_on_contact_id"
   add_index "chat_messages", ["user_id"], :name => "index_chat_messages_on_user_id"
 
   create_table "chats", :force => true do |t|
+    t.integer  "cid"
     t.integer  "user_id"
     t.integer  "contact_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
+  add_index "chats", ["cid"], :name => "index_chats_on_cid"
   add_index "chats", ["contact_id"], :name => "index_chats_on_contact_id"
   add_index "chats", ["user_id"], :name => "index_chats_on_user_id"
 
@@ -42,15 +46,25 @@ ActiveRecord::Schema.define(:version => 20120917163644) do
     t.datetime "updated_at", :null => false
   end
 
-  create_table "users", :force => true do |t|
-    t.string   "username"
-    t.integer  "uid"
-    t.integer  "role_id"
-    t.string   "token"
-    t.string   "first_name"
-    t.string   "last_name"
+  create_table "spaces", :force => true do |t|
+    t.integer  "sid"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "users", :force => true do |t|
+    t.string   "username"
+    t.integer  "uid"
+    t.string   "token"
+    t.string   "first_name"
+    t.string   "last_name"
+    t.integer  "role_id"
+    t.integer  "space_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "users", ["token"], :name => "index_users_on_token"
+  add_index "users", ["uid"], :name => "index_users_on_uid"
 
 end

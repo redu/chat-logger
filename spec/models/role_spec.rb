@@ -1,5 +1,7 @@
 require 'spec_helper'
 
 describe Role do
-  pending "add some examples to (or delete) #{__FILE__}"
+  # Name
+  it { should respond_to(:name) }
+  it { should validate_presence_of(:name) }
 end

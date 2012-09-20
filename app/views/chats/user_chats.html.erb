@@ -1,0 +1,22 @@
+<ul class="breadcrumb-mini">
+  <li class="breadcrumb-mini-item breadcrumb-mini-compact icon-arrow-right-separator-gray_16_18-after">
+    <%= link_to root_path, '/', :class => "breadcrumb-mini-link icon-home-lightblue_16_18-before" %>
+  </li>
+  <li class="breadcrumb-mini-item icon-arrow-right-separator-gray_16_18-after">
+    Conversas de <%= @user.first_name %>
+  </li>
+</ul>
+<br /><br />
+<div class="row">
+  <div class="span7 offset1">
+    <ul class="list-button">
+      <% @chats.each do | chat | %>
+        <li class="list-button-item">
+          <%= link_to space_user_chat_path(@space.sid, @user, chat) do %>
+            Conversa com <%= chat.contact.role.name %> <%= chat.contact.first_name %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
