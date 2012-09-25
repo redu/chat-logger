@@ -4,17 +4,29 @@ class Chat < ActiveRecord::Base
   belongs_to :contact, :class_name => 'User', :foreign_key => 'contact_id'
   has_many :chat_messages, :dependent => :destroy
 
-  def self.update_chats_for(user, space)
-    conn = Faraday.new(:url => 'http://redu.com.br/api') do | faraday |
-      faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
+  def refresh!(token)
+    url = "/api/chats/#{self.cid}/chat_messages"
+    messages = JSON.parse Connection.get(url, token).body
+    return unless messages.count > self.chat_messages.count
+    messages.each do | redu_message |
+      unless ChatMessage.find_by_cmid(redu_message["id"])
+        self.chat_messages << ChatMessage.create_by_api(redu_message, token)
+      end
     end
+  end
 
+  def self.refresh(current_user, current_space)
+    current_space.users.each do | user |
+      unless !user.token
+        user.refresh_chats(user.token, current_space)
+      end
+    end
+  end
+
+  def self.update_chats_for(user, space)
     token = user.token
-
-    conn.headers = { 'Authorization' => "OAuth #{token}", 
-                     'Content-type' => 'application/json' }
-    chats = JSON.parse conn.get("/api/users/#{user.username}/chats").body
+    url = "/api/users/#{user.username}/chats"
+    chats = JSON.parse Connection.get(url, token).body
     
     chats.each do | redu_chat |
       links = redu_chat["links"].select { |l| l["rel"] == "contact" }

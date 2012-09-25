@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   end
 
   def update_chats
-    Chat.update_chats_for(current_user, current_space)
+    Chat.refresh(current_user, current_space)
   end
 
   private

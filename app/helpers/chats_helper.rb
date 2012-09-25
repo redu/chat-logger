@@ -11,8 +11,12 @@ module ChatsHelper
       end
       per_day << message
     end
-    all << per_day if per_day.length != 0
+    all << (per_day.sort_by &:sent_at) if per_day.length != 0
     
     all
+  end
+
+  def sort_by_date
+
   end
 end

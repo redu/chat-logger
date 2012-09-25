@@ -25,6 +25,34 @@ class User < ActiveRecord::Base
     Chat.where(t[:user_id].eq(self.id).or(t[:contact_id].eq(self.id)))
   end
 
+  def refresh_chats(token, space)
+    url = "/api/users/#{self.username}/chats"
+    chats = JSON.parse Connection.get(url, token).body
+
+    # Cria chats que eventualmente ainda não existem
+    chats.each do | redu_chat |
+      links = redu_chat["links"].select { |l| l["rel"] == "contact" }
+      contact = User.find_by_api(links.first["href"], 
+                                 token)
+      cid = redu_chat["id"]
+      # Não criar chats para contatos não existentes ou não vinculados à disciplina
+      if (contact && space.users.include?(contact) && !Chat.find_by_cid(cid))
+        chat = Chat.create do | chat |
+          chat.cid = redu_chat["id"]
+          chat.user = self
+          chat.contact = contact
+        end
+        ChatMessage.create_messages_for(chat)
+        self.chats << chat
+      end
+    end
+
+    # Atualiza chats já existentes (que podem ter ganhado novas mensagens)
+    self.chats.each do | chat |
+      chat.refresh!(token)
+    end
+  end
+
   def self.find_or_create_with_omniauth(auth, space)
     user = User.find_by_uid(auth["uid"]) || User.create_with_omniauth(auth, space)
     token = auth["credentials"]["token"]
@@ -34,14 +62,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_by_api(url, token)
-    conn = Faraday.new(:url => 'http://redu.com.br/api') do | faraday |
-      faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
-    end
-
-    conn.headers = { 'Authorization' => "OAuth #{token}", 
-                     'Content-type' => 'application/json' }
-    user = JSON.parse conn.get(url).body
+    user = JSON.parse Connection.get(url, token).body
 
     User.find_by_uid(user["id"])
   end
@@ -68,21 +89,13 @@ class User < ActiveRecord::Base
   end
 
   def self.consult_role_by_api(user, space, token)
-    conn = Faraday.new(:url => 'http://redu.com.br/api') do | faraday |
-      faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
-    end
-
-    conn.headers = { 'Authorization' => "OAuth #{token}", 
-                     'Content-type' => 'application/json' }
-    
-    members = JSON.parse conn.get("/api/spaces/#{space.sid}/users?role=member").body
+    members = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=member", token).body
     return Role.find(1) if (members.select { |m| m["id"] == user.uid }).length != 0
-    teachers = JSON.parse conn.get("/api/spaces/#{space.sid}/users?role=teacher").body
+    teachers = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=teacher", token).body
     return Role.find(3) if (teachers.select { |m| m["id"] == user.uid }).length != 0
-    admins = JSON.parse conn.get("/api/spaces/#{space.sid}/users?role=environment_admin").body
+    admins = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=environment_admin", token).body
     return Role.find(2) if (admins.select { |m| m["id"] == user.uid }).length != 0
-    tutors = JSON.parse conn.get("/api/spaces/#{space.sid}/users?role=tutor").body
+    tutors = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=tutor", token).body
     return Role.find(4) if (tutors.select { |m| m["id"] == user.uid }).length != 0
   end
 end

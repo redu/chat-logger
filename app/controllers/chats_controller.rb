@@ -5,7 +5,7 @@ class ChatsController < ApplicationController
   def index
     @space = current_space
     @user = User.find(params[:user_id])
-    @chats = @user.find_all_chats
+    @chats = @user.chats
     render 'user_chats'
   end
 
