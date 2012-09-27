@@ -66,5 +66,6 @@ ActiveRecord::Schema.define(:version => 20120919170850) do
 
   add_index "users", ["token"], :name => "index_users_on_token"
   add_index "users", ["uid"], :name => "index_users_on_uid"
+  add_index "users", ["username"], :name => "index_users_on_username"
 
 end

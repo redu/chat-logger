@@ -18,7 +18,7 @@ class Chat < ActiveRecord::Base
   def self.refresh(current_user, current_space)
     current_space.users.each do | user |
       unless !user.token
-        user.refresh_chats(user.token, current_space)
+        user.refresh_chats(current_space)
       end
     end
   end

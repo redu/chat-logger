@@ -25,15 +25,15 @@ class User < ActiveRecord::Base
     Chat.where(t[:user_id].eq(self.id).or(t[:contact_id].eq(self.id)))
   end
 
-  def refresh_chats(token, space)
+  def refresh_chats(space)
     url = "/api/users/#{self.username}/chats"
-    chats = JSON.parse Connection.get(url, token).body
+    chats = JSON.parse Connection.get(url, self.token).body
 
     # Cria chats que eventualmente ainda não existem
     chats.each do | redu_chat |
-      links = redu_chat["links"].select { |l| l["rel"] == "contact" }
-      contact = User.find_by_api(links.first["href"], 
-                                 token)
+      contact_link = redu_chat["links"].select { |l| l["rel"] == "contact" }
+      contact = User.find_by_api(contact_link.first["href"], 
+                                 self.token)
       cid = redu_chat["id"]
       # Não criar chats para contatos não existentes ou não vinculados à disciplina
       if (contact && space.users.include?(contact) && !Chat.find_by_cid(cid))
@@ -49,12 +49,13 @@ class User < ActiveRecord::Base
 
     # Atualiza chats já existentes (que podem ter ganhado novas mensagens)
     self.chats.each do | chat |
-      chat.refresh!(token)
+      chat.refresh!(self.token)
     end
   end
 
-  def self.find_or_create_with_omniauth(auth, space)
-    user = User.find_by_uid(auth["uid"]) || User.create_with_omniauth(auth, space)
+  def self.find_or_create_with_omniauth(auth, space_id)
+    user = User.find_by_uid(auth["uid"]) || User.create_with_omniauth(auth, 
+                                                                      space_id)
     token = auth["credentials"]["token"]
     user.update_attributes(:token => token) if token
 
@@ -72,30 +73,30 @@ class User < ActiveRecord::Base
       user.uid = redu_user["id"]
       user.username = redu_user["login"]
       user.first_name = redu_user["first_name"]
-      user.role = User.consult_role_by_api(user, space, token)
+      user.role = User.consult_role_by_api(user, space.sid, token)
     end
   end
 
   private
 
-  def self.create_with_omniauth(auth, space)
+  def self.create_with_omniauth(auth, space_id)
     create! do | user |
       user.uid = auth["uid"]
       user.token = auth["credentials"]["token"]
       user.first_name = auth["info"]["name"]
       user.username = auth["info"]["login"]
-      user.role = User.consult_role_by_api(user, space, user.token)
+      user.role = User.consult_role_by_api(user, space_id, user.token)
     end
   end
 
-  def self.consult_role_by_api(user, space, token)
-    members = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=member", token).body
+  def self.consult_role_by_api(user, space_id, token)
+    members = JSON.parse Connection.get("/api/spaces/#{space_id}/users?role=member", token).body
     return Role.find(1) if (members.select { |m| m["id"] == user.uid }).length != 0
-    teachers = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=teacher", token).body
+    teachers = JSON.parse Connection.get("/api/spaces/#{space_id}/users?role=teacher", token).body
     return Role.find(3) if (teachers.select { |m| m["id"] == user.uid }).length != 0
-    admins = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=environment_admin", token).body
+    admins = JSON.parse Connection.get("/api/spaces/#{space_id}/users?role=environment_admin", token).body
     return Role.find(2) if (admins.select { |m| m["id"] == user.uid }).length != 0
-    tutors = JSON.parse Connection.get("/api/spaces/#{space.sid}/users?role=tutor", token).body
+    tutors = JSON.parse Connection.get("/api/spaces/#{space_id}/users?role=tutor", token).body
     return Role.find(4) if (tutors.select { |m| m["id"] == user.uid }).length != 0
   end
 end

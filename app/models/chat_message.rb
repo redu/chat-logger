@@ -17,6 +17,8 @@ class ChatMessage < ActiveRecord::Base
     end
   end
 
+  private
+
   def self.create_by_api(redu_chat_message, token)
     create! do | chat_message |
       chat_message.cmid = redu_chat_message["id"]
@@ -24,8 +26,10 @@ class ChatMessage < ActiveRecord::Base
       links = redu_chat_message["links"]
       user_url = links.select { |l| l["rel"] == "user" }
       contact_url = links.select { |l| l["rel"] == "contact" }
-      chat_message.user = User.find_by_api(user_url.first["href"], token)
-      chat_message.contact = User.find_by_api(contact_url.first["href"], token)
+      user_username = user_url.first["href"].split(/\/ */).last
+      contact_username = contact_url.first["href"].split(/\/ */).last
+      chat_message.user = User.find_by_username(user_username)
+      chat_message.contact = User.find_by_username(contact_username)
       chat_message.sent_at = DateTime.parse(redu_chat_message["created_at"])
     end
   end
