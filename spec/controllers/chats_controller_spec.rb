@@ -12,6 +12,9 @@ describe ChatsController do
     sid = FactoryGirl.create(:space).sid
     session[:user_uid] = uid
     session[:space_sid] = sid
+    stub_request(:get, 
+                  "http://redu.com.br/api/spaces/#{session[:space_sid]}/users").
+      to_return(:body => "{}")
     get :index, :user_id => uid, :space_id => sid
     response.status.should == 401
   end
@@ -26,7 +29,10 @@ describe ChatsController do
       session[:space_sid] = @space.sid
       @space.users << @user
       @user.chats << FactoryGirl.create(:chat, :user => @user)
-      get :index, :user_id => @user.uid, :space_id => @space.sid
+      stub_request(:get, 
+                    "http://redu.com.br/api/spaces/#{session[:space_sid]}/users").
+        to_return(:body => "{}")
+      get :index, :user_id => @user.id, :space_id => @space.sid
     end
 
     it "should assign user chats" do
@@ -48,6 +54,9 @@ describe ChatsController do
       session[:user_uid] = @user.uid
       session[:space_sid] = @space.sid
       @space.users << @user
+      stub_request(:get, 
+                    "http://redu.com.br/api/spaces/#{session[:space_sid]}/users").
+        to_return(:body => "{}")
       get :show, :user_id => @user.uid, :space_id => @space.sid, :id => @chat.id
     end
 

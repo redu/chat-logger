@@ -50,7 +50,12 @@ class ApplicationController < ActionController::Base
 
     # Space.find_or_create_by_sid retorna nil caso o usuário não participe
     # da disciplina
-    session[:space_sid] = Space.find_or_create_by_sid(sid, current_user).sid
+    space = Space.find_or_create_by_sid(sid, current_user)
+    if space
+      session[:space_sid] = Space.find_or_create_by_sid(sid, current_user).sid
+    else
+      session[:space_sid] = nil
+    end
   end
 
 end

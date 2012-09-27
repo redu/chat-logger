@@ -10,6 +10,9 @@ describe UsersController do
   it "should check current user membership within current space" do
     session[:user_uid] = FactoryGirl.create(:user).uid
     session[:space_sid] = FactoryGirl.create(:space).sid
+    stub_request(:get, 
+                  "http://redu.com.br/api/spaces/#{session[:space_sid]}/users").
+      to_return(:body => "{}")
     get :index
     response.status.should == 401
   end
@@ -23,6 +26,9 @@ describe UsersController do
         @space.users << @user
         session[:user_uid] = @user.uid
         session[:space_sid] = @space.sid
+        stub_request(:get, 
+                      "http://redu.com.br/api/spaces/#{session[:space_sid]}/users").
+          to_return(:body => "{}")
         get :index
       end
 

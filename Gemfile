@@ -19,7 +19,8 @@ group :development do
 end
 
 group :test do
-  gem "shoulda-matchers"
+  gem 'shoulda-matchers'
+  gem 'webmock'
 end
 
 group :development, :test do
