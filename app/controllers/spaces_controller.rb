@@ -1,2 +1,0 @@
-class SpacesController < ApplicationController
-end

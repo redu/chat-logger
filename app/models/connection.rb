@@ -3,7 +3,7 @@ class Connection < ActiveRecord::Base
     logger.debug "(Faraday) Get #{url} com token #{token}"
     conn = Faraday.new(:url => 'http://redu.com.br/api') do | faraday |
       faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
+      faraday.adapter :patron # Faraday.default_adapter
     end
     conn.headers = { 'Authorization' => "OAuth #{token}", 
                      'Content-type' => 'application/json' }

@@ -1,4 +1,7 @@
 class SessionsController < ApplicationController
+
+  # GET /sessions/create
+  # GET /auth/:provider/callback
   def create
     @user = current_user || User.find_or_create_with_omniauth(auth_hash, 
                                                               session[:space_sid])

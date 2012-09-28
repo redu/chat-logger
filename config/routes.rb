@@ -3,7 +3,6 @@ ChatLogger::Application.routes.draw do
 
   get 'sessions/create'
   match '/auth/:provider/callback', :to => 'sessions#create'
-  # match '/auth/redu', :to => 'sessions#create'
 
   resources :spaces, :only => [] do
     resources :users, :only => :index do

@@ -14,6 +14,8 @@ gem 'faraday'
 
 gem 'therubyracer'
 
+gem 'patron'
+
 group :development do
   gem 'rspec-rails'
 end
