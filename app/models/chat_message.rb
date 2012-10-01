@@ -1,11 +1,12 @@
 class ChatMessage < ActiveRecord::Base
-  attr_accessible :message, :sent_at
+  attr_accessible :message, :sent_at, :cid
   belongs_to :chat
   belongs_to :user
   belongs_to :contact, :class_name => 'User', :foreign_key => 'contact_id'
 
   validates_presence_of :message, :sent_at
 
+  # Cria todas as mensagens do Chat a partir de *UMA* requisição à API do Redu
   def self.create_messages_for(chat)
     token = chat.user.token
     url = "/api/chats/#{chat.cid}/chat_messages"
@@ -17,8 +18,6 @@ class ChatMessage < ActiveRecord::Base
     end
   end
 
-  private
-
   def self.create_by_api(redu_chat_message, token)
     create! do | chat_message |
       chat_message.cmid = redu_chat_message["id"]
@@ -26,10 +25,8 @@ class ChatMessage < ActiveRecord::Base
       links = redu_chat_message["links"]
       user_url = links.select { |l| l["rel"] == "user" }
       contact_url = links.select { |l| l["rel"] == "contact" }
-      user_username = user_url.first["href"].split(/\/ */).last
-      contact_username = contact_url.first["href"].split(/\/ */).last
-      chat_message.user = User.find_by_username(user_username)
-      chat_message.contact = User.find_by_username(contact_username)
+      chat_message.user = User.find_by_url(user_url.first['href'])
+      chat_message.contact = User.find_by_url(contact_url.first['href'])
       chat_message.sent_at = DateTime.parse(redu_chat_message["created_at"])
     end
   end

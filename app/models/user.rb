@@ -19,40 +19,9 @@ class User < ActiveRecord::Base
   # Space
   belongs_to :space
 
-  def find_all_chats
-    t = Chat.arel_table
-
-    Chat.where(t[:user_id].eq(self.id).or(t[:contact_id].eq(self.id)))
-  end
-
-  def refresh_chats(space)
-    url = "/api/users/#{self.username}/chats"
-    chats = JSON.parse Connection.get(url, self.token).body
-
-    # Cria chats que eventualmente ainda não existem
-    chats.each do | redu_chat |
-      contact_link = redu_chat["links"].select { |l| l["rel"] == "contact" }
-      contact = User.find_by_api(contact_link.first["href"], 
-                                 self.token)
-      cid = redu_chat["id"]
-      # Não criar chats para contatos não existentes ou não vinculados à disciplina
-      if (contact && space.users.include?(contact) && !Chat.find_by_cid(cid))
-        chat = Chat.create do | chat |
-          chat.cid = redu_chat["id"]
-          chat.user = self
-          chat.contact = contact
-        end
-        ChatMessage.create_messages_for(chat)
-        self.chats << chat
-      end
-    end
-
-    # Atualiza chats já existentes (que podem ter ganhado novas mensagens)
-    self.chats.each do | chat |
-      chat.refresh!(self.token)
-    end
-  end
-
+  # Recupera ou cria usuário de acordo com hash omniauth
+  # O segundo parâmetro, space_id, diz respeito ao ID da disciplina no Redu
+  # - isto é, deve ser o sid do Space
   def self.find_or_create_with_omniauth(auth, space_id)
     user = User.find_by_uid(auth["uid"]) || User.create_with_omniauth(auth, 
                                                                       space_id)
@@ -62,6 +31,9 @@ class User < ActiveRecord::Base
     user
   end
 
+  # Recupera um usuário existente a partir de sua url do Redu
+  # fazendo uma requisição à API - muito mau!
+  # Substituir por User.find_by_url sempre que possível
   def self.find_by_api(url, token)
     user = JSON.parse Connection.get(url, token).body
 
@@ -77,8 +49,18 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Recupera um usuário existente a partir de sua url do Redu
+  # sem fazer requisições externas - muito bom!
+  # Usar este método em lugar de find_by_api sempre que possível
+  def self.find_by_url(url)
+    User.find_by_username(url.split(/\/ */).last)
+  end
+
   private
 
+  # Cria um novo usuário com os dados da hash do omniauth
+  # O id do space é necessário para consultar o papel do usuário na disciplina
+  # Atentar que o space_id passado deve ser, na realidade, o sid do Space
   def self.create_with_omniauth(auth, space_id)
     create! do | user |
       user.uid = auth["uid"]
@@ -89,6 +71,8 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Consulta o papel de um usuário em uma disciplina do Redu a partir de
+  # requisições à API
   def self.consult_role_by_api(user, space_id, token)
     members = JSON.parse Connection.get("/api/spaces/#{space_id}/users?role=member", token).body
     return Role.find(1) if (members.select { |m| m["id"] == user.uid }).length != 0

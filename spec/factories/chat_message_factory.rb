@@ -2,6 +2,7 @@
 
 FactoryGirl.define do
   factory :chat_message do
+    sequence(:cmid)
     association :user, factory: :student
     association :contact, factory: :mentor
     message 'This webpage is not available'

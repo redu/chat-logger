@@ -36,7 +36,7 @@ describe ChatsController do
     end
 
     it "should assign user chats" do
-      assigns(:chats).should == @user.find_all_chats
+      assigns(:chats).should == @user.chats
     end
 
     it "should render user chats" do

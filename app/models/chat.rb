@@ -1,9 +1,16 @@
 class Chat < ActiveRecord::Base
   attr_accessible :contact, :chat_messages
+
+  # Users
   belongs_to :user
+  validates_presence_of :user
   belongs_to :contact, :class_name => 'User', :foreign_key => 'contact_id'
+  validates_presence_of :contact
+
+  # Chat messages
   has_many :chat_messages, :dependent => :destroy
 
+  # Atualiza as chat messages do chat
   def refresh!(token)
     url = "/api/chats/#{self.cid}/chat_messages"
     messages = JSON.parse Connection.get(url, token).body
@@ -15,23 +22,28 @@ class Chat < ActiveRecord::Base
     end
   end
 
-  def self.refresh(current_user, current_space)
+  # Atualiza todos os chats para todos os usuários de uma determinada disciplina
+  # sob a condição de o usuário possuir token de acesso
+  def self.refresh(current_space)
     current_space.users.each do | user |
       unless !user.token
-        user.refresh_chats(current_space)
+        Chat.update_chats_for(user, current_space)
       end
     end
   end
 
+  private
+
+  # Atualiza todos os chats para um determinado usuário em relação a uma 
+  # determinada disciplina
   def self.update_chats_for(user, space)
     token = user.token
     url = "/api/users/#{user.username}/chats"
     chats = JSON.parse Connection.get(url, token).body
-    
+
     chats.each do | redu_chat |
-      links = redu_chat["links"].select { |l| l["rel"] == "contact" }
-      contact = User.find_by_api(links.first["href"], 
-                                 token)
+      contact_link = redu_chat["links"].select { |l| l["rel"] == "contact" }
+      contact = User.find_by_url(contact_link.first["href"])
       cid = redu_chat["id"]
       # Não criar chats para contatos não existentes ou não vinculados à disciplina
       if (contact && space.users.include?(contact) && !Chat.find_by_cid(cid))
@@ -43,6 +55,11 @@ class Chat < ActiveRecord::Base
         ChatMessage.create_messages_for(chat)
         user.chats << chat
       end
+    end
+
+    # Atualiza chats já existentes (que podem ter ganhado novas mensagens)
+    user.chats.each do | chat |
+      chat.refresh!(user.token)
     end
   end
 

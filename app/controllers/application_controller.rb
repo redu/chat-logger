@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
 
   # Atualiza os chats para todos os usuários da disciplina da sessão
   def update_chats
-    Chat.refresh(current_user, current_space)
+    Chat.refresh(current_space)
   end
 
   private

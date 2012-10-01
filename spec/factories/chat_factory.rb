@@ -4,6 +4,7 @@ FactoryGirl.define do
   factory :chat do 
     association :user, factory: :student
     association :contact, factory: :mentor
+    sequence(:cid)
 
     after(:create) do |chat|
       6.times do | n |

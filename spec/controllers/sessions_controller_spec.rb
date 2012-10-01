@@ -5,8 +5,9 @@ describe SessionsController do
   describe 'GET create' do
     before do
       request.env['omniauth.auth'] = OmniAuth.config.mock_auth[:redu]
+      @uid = request.env['omniauth.auth']['uid']
       stub_request(:get, "http://redu.com.br/api/spaces/users?role=member").
-        to_return(:body => '[{"id": 1}, {"id": 2}]')
+        to_return(:body => "[{\"id\": #{@uid.to_s} }]")
     end
 
     context 'when user does not exist' do
@@ -23,7 +24,7 @@ describe SessionsController do
 
       it 'should assign session user uid' do
         get :create
-        controller.session[:user_uid].should == 1
+        controller.session[:user_uid].to_s.should == @uid.to_s
       end
     end
 
