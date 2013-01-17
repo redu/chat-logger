@@ -2,6 +2,8 @@
 Uma aplicação para visualização de dados de conversação entre mentores e mentorandos
 do programa eMentoring - implantado sobre a plataforma Redu.
 
+[![Dependency Status](https://gemnasium.com/redu/chat-logger.png)](https://gemnasium.com/redu/chat-logger)
+
 <img src="https://github.com/downloads/redu/redupy/redutech-marca.png" alt="Redu Educational Technologies" width="300">
 
 This project is maintained and funded by [Redu Educational Techologies](http://tech.redu.com.br).
